@@ -1,0 +1,247 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{sysu-proposal}[2026/10/14 SYSU Physics proposal template]
+\RequirePackage{iftex}
+\ifXeTeX\else
+  \PackageError{sysu-proposal}{Please compile with XeLaTeX}{Use latexmk -xelatex main.tex.}
+\fi
+\RequirePackage{geometry}
+% 原 Word：11906 × 16838 twips；四边 1418 twips；1 twip = 1/20 bp。
+% 保留原文件实际数值（A4 与 2.5 cm 的 Word 内部取整值）。
+\geometry{paperwidth=595.3bp,paperheight=841.9bp,
+  left=70.9bp,right=70.9bp,top=70.9bp,bottom=70.9bp,
+  noheadfoot}
+\RequirePackage{amsmath,amssymb}
+\RequirePackage{graphicx,booktabs,tabularx,array}
+\RequirePackage{tikz}
+\RequirePackage{caption}
+\RequirePackage{enumitem}
+\RequirePackage{needspace}
+\RequirePackage[numbers,sort&compress]{natbib}
+\RequirePackage[hidelinks]{hyperref}
+\hypersetup{hypertexnames=false} % 封面页计数重置时仍保证内部链接唯一。
+\linespread{1}\selectfont
+\urlstyle{same} % URL 中的英文与数字也必须使用 Times New Roman。
+
+% ===== 字体：使用实际宋体/黑体/TNR，不自动替换成近似字体 =====
+% 跨平台可以在 main.tex 中、加载本包之前定义 \ProposalFontPath，
+% 或将有使用许可的字体放在 fonts/。模版不分发商业字体。
+\providecommand*{\ProposalFontPath}{}
+\ifx\ProposalFontPath\empty
+  \IfFileExists{fonts/Simsun.ttc}{\renewcommand{\ProposalFontPath}{fonts/}}{%
+    \IfFileExists{/Applications/Microsoft Word.app/Contents/Resources/DFonts/Simsun.ttc}
+      {\renewcommand{\ProposalFontPath}{/Applications/Microsoft Word.app/Contents/Resources/DFonts/}}{}
+  }
+\fi
+\ifx\ProposalFontPath\empty
+  \IfFontExistsTF{SimSun}{%
+    \setCJKmainfont{SimSun}[AutoFakeBold=2.5]
+    \setCJKfamilyfont{song}{SimSun}[AutoFakeBold=2.5]
+  }{\PackageError{sysu-proposal}{SimSun font is required}{Install SimSun or set ProposalFontPath.}}
+  \IfFontExistsTF{SimHei}{%
+    \setCJKsansfont{SimHei}[AutoFakeBold=2.5]
+    \setCJKfamilyfont{hei}{SimHei}[AutoFakeBold=2.5]
+  }{\PackageError{sysu-proposal}{SimHei font is required}{Install SimHei or set ProposalFontPath.}}
+  \IfFontExistsTF{KaiTi}{\setCJKfamilyfont{kai}{KaiTi}[AutoFakeBold=2.5]}
+    {\setCJKfamilyfont{kai}{Kaiti SC}[AutoFakeBold=2.5]}
+  \IfFontExistsTF{LiSu}{\setCJKfamilyfont{li}{LiSu}}
+    {\setCJKfamilyfont{li}{STLiti}}
+\else
+  \setCJKmainfont{Simsun.ttc}[Path=\ProposalFontPath,FontIndex=0,AutoFakeBold=2.5]
+  \setCJKfamilyfont{song}{Simsun.ttc}[Path=\ProposalFontPath,FontIndex=0,AutoFakeBold=2.5]
+  \setCJKsansfont{SimHei.ttf}[Path=\ProposalFontPath,AutoFakeBold=2.5]
+  \setCJKfamilyfont{hei}{SimHei.ttf}[Path=\ProposalFontPath,AutoFakeBold=2.5]
+  \setCJKfamilyfont{kai}{Kaiti.ttf}[Path=\ProposalFontPath,AutoFakeBold=2.5]
+  \setCJKfamilyfont{li}{STLITI.ttf}[Path=\ProposalFontPath]
+\fi
+% Overleaf 或其他云端环境：优先读取用户自行上传的 TNR 字体文件。
+\IfFileExists{fonts/times.ttf}{%
+  \setmainfont{times.ttf}[Path=fonts/,
+    BoldFont=timesbd.ttf,ItalicFont=timesi.ttf,BoldItalicFont=timesbi.ttf]
+  \setsansfont{times.ttf}[Path=fonts/,
+    BoldFont=timesbd.ttf,ItalicFont=timesi.ttf,BoldItalicFont=timesbi.ttf]
+}{%
+  \setmainfont{Times New Roman}
+  \setsansfont{Times New Roman}
+}
+% 在设置文字字体后加载，数学直立字母与数字也取实际 TNR。
+\RequirePackage[noOT1]{newtxmath}
+\providecommand{\songti}{\CJKfamily{song}}
+\providecommand{\heiti}{\CJKfamily{hei}}
+\providecommand{\kaishu}{\CJKfamily{kai}}
+\newcommand{\ProposalLiti}{\CJKfamily{li}}
+% 封面按本机 Word 实际显示匹配：旧字体缺失时，Word 使用微软雅黑。
+% 仅作用于封面；正文字体仍严格为宋体/黑体/TNR。
+\newcommand{\ProposalCoverSchoolFont}{\kaishu\bfseries}
+\newcommand{\ProposalCoverFooterFont}{\ProposalLiti}
+\IfFileExists{fonts/msyh.ttc}{%
+  \setCJKfamilyfont{cover-yahei}{msyh.ttc}[Path=fonts/,
+    FontIndex=0,BoldFont=msyhbd.ttc,BoldFeatures={FontIndex=0}]
+  \renewcommand{\ProposalCoverSchoolFont}{\CJKfamily{cover-yahei}\bfseries}
+  \renewcommand{\ProposalCoverFooterFont}{\CJKfamily{cover-yahei}\mdseries}
+}{\IfFontExistsTF{Microsoft YaHei}{%
+  \setCJKfamilyfont{cover-yahei}{Microsoft YaHei}[BoldFont=Microsoft YaHei Bold]
+  \renewcommand{\ProposalCoverSchoolFont}{\CJKfamily{cover-yahei}\bfseries}
+  \renewcommand{\ProposalCoverFooterFont}{\CJKfamily{cover-yahei}\mdseries}
+}{%
+  \IfFileExists{/Applications/Microsoft Word.app/Contents/Resources/DFonts/msyh.ttc}{%
+    \setCJKfamilyfont{cover-yahei}{msyh.ttc}[
+      Path=/Applications/Microsoft Word.app/Contents/Resources/DFonts/,
+      FontIndex=0,BoldFont=msyhbd.ttc,BoldFeatures={FontIndex=0}]
+    \renewcommand{\ProposalCoverSchoolFont}{\CJKfamily{cover-yahei}\bfseries}
+    \renewcommand{\ProposalCoverFooterFont}{\CJKfamily{cover-yahei}\mdseries}
+  }{}
+}}
+
+% 小四 = 12 bp；固定 22 磅行距；段前后为 0；首行两字。
+\renewcommand{\normalsize}{%
+  \@setfontsize\normalsize{12bp}{22bp}%
+  \abovedisplayskip=11bp \belowdisplayskip=11bp
+  \abovedisplayshortskip=0bp \belowdisplayshortskip=11bp
+}
+\AtBeginDocument{\normalsize\songti\setlength{\parindent}{2em}}
+\setlength{\parskip}{0bp}
+\pagestyle{empty} % 原 Word 无页眉和页码。
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+% 第四部分逐级字体规定；第五部分节/条/款题序顶格。
+\ctexset{
+  section={name={},number=\arabic{section},
+    format=\raggedright\songti\bfseries\fontsize{16bp}{22bp}\selectfont,
+    indent=0pt,aftername=\quad,beforeskip=11bp,afterskip=11bp},
+  subsection={name={},number=\thesubsection,
+    format=\raggedright\songti\bfseries\fontsize{14bp}{22bp}\selectfont,
+    indent=0pt,aftername=\quad,beforeskip=11bp,afterskip=11bp},
+  subsubsection={name={},number=\thesubsubsection,
+    format=\raggedright\songti\normalfont\fontsize{12bp}{22bp}\selectfont,
+    indent=0pt,aftername=\quad,beforeskip=0bp,afterskip=0bp}
+}
+\newcommand{\ProposalChapterHeading}[1]{%
+  \par\noindent{\centering\heiti\bfseries
+  \fontsize{22bp}{22bp}\selectfont #1\par}\vspace{22bp}}
+\renewcommand{\contentsname}{目\quad 录}
+\renewcommand{\tableofcontents}{%
+  \clearpage\ProposalChapterHeading{\contentsname}\@starttoc{toc}\clearpage}
+% 项：题序前空 4 个半角字符（两字宽），标题与接排内容之间 \quad。
+\newlist{proposalitems}{enumerate}{1}
+\setlist[proposalitems]{label=（\arabic*）,labelindent=2em,
+  leftmargin=*,labelsep=0pt,align=left,itemindent=0pt,
+  itemsep=0pt,parsep=0pt,topsep=0pt,partopsep=0pt}
+
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+\numberwithin{equation}{section}
+\renewcommand{\thefigure}{\thesection-\arabic{figure}}
+\renewcommand{\thetable}{\thesection-\arabic{table}}
+\renewcommand{\theequation}{\thesection-\arabic{equation}}
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
+\DeclareCaptionFont{proposal}{\songti\normalfont\fontsize{12bp}{22bp}\selectfont}
+\DeclareCaptionLabelFormat{proposal}{#1#2}
+\captionsetup{font=proposal,labelformat=proposal,labelsep=quad,justification=centering,
+  singlelinecheck=false,skip=6bp}
+\captionsetup[figure]{position=bottom}
+\captionsetup[table]{position=top}
+\setlength{\textfloatsep}{11bp}
+\setlength{\intextsep}{11bp}
+\setlength{\floatsep}{11bp}
+\renewcommand{\arraystretch}{1.15}
+
+% 参考文献是第 7 个一级标题；不生成重复的无编号标题。
+\renewcommand{\bibsection}{\section{主要参考文献}}
+\renewcommand{\bibfont}{\songti\normalsize}
+\setlength{\bibsep}{0bp}
+\setcitestyle{numbers,square,comma}
+
+\newcommand{\ProposalTitle}{}
+\newcommand{\ProposalName}{}
+\newcommand{\ProposalStudentID}{}
+\newcommand{\ProposalMajor}{}
+\newcommand{\ProposalDirection}{}
+\newcommand{\ProposalSupervisor}{}
+\newcommand{\ProposalDegree}{博/硕士}
+\newcommand{\ProposalVersion}{二零二三版}
+\newsavebox{\ProposalCoverTitleBox}
+\newsavebox{\ProposalCoverNaturalTitleBox}
+% 封面坐标来自原 .doc 经 Microsoft Word 原生导出的 PDF，单位 bp。
+% 所有文字仍由 LaTeX 排版；没有把封面做成不可编辑的图片。
+\newcommand{\ProposalCoverField}[3]{%
+  \node[anchor=base west,inner sep=0pt] at
+    ([xshift=140bp,yshift=-#1bp]current page.north west)
+    {\songti\bfseries\fontsize{16bp}{35bp}\selectfont
+      \scalebox{1}[0.980392]{\makebox[89.49bp][s]{#2}}};
+  \node[anchor=base west,inner sep=0pt] at
+    ([xshift=229.67bp,yshift=-#1bp]current page.north west)
+    {\songti\bfseries\fontsize{16bp}{35bp}\selectfont
+      \makebox[204bp][c]{#3}};
+  \draw[line width=1.44bp] ([xshift=229.67bp,yshift=-#1bp-2.616bp]current page.north west)
+    -- ++(204bp,0);
+}
+\newcommand{\MakeProposalCover}{%
+  \begin{titlepage}
+    \setlength{\parindent}{0pt}
+    \sbox{\ProposalCoverTitleBox}{\parbox[t]{366.96bp}{%
+      \songti\bfseries\fontsize{18bp}{27bp}\selectfont
+      \raggedright\strut\ProposalTitle\strut}}
+    \sbox{\ProposalCoverNaturalTitleBox}{%
+      \songti\bfseries\fontsize{18bp}{27bp}\selectfont
+      \let\\\space\strut\ProposalTitle\strut}
+    % 仅略超出栏宽时压缩水平宽度（最多 5%），保留原字号高度，
+    % 避免长题目只剩一字落到第二行；更长题目仍正常换行。
+    \ifdim\wd\ProposalCoverNaturalTitleBox>366.96bp
+      \ifdim\wd\ProposalCoverNaturalTitleBox<385.308bp
+        \pgfmathsetmacro{\ProposalCoverTitleScale}{366.96bp/\wd\ProposalCoverNaturalTitleBox}
+        \sbox{\ProposalCoverTitleBox}{%
+          \scalebox{\ProposalCoverTitleScale}[1]{\usebox{\ProposalCoverNaturalTitleBox}}}
+      \fi
+    \fi
+    \begin{tikzpicture}[remember picture,overlay]
+      \foreach \character [count=\i from 0] in {中,山,大,学,物,理,学,院}{%
+        \node[anchor=base west,inner sep=0pt] at
+          ([xshift=149.03bp+39bp*\i,yshift=-168.47bp]current page.north west)
+          {\ProposalCoverSchoolFont\fontsize{25.92bp}{39bp}\selectfont\character};
+      }
+      \node[anchor=base,inner sep=0pt] at
+        ([xshift=298.56bp,yshift=-204.47bp]current page.north west)
+        {\heiti\mdseries\fontsize{22bp}{33bp}\selectfont 攻读\ProposalDegree 学位研究生};
+      \foreach \character [count=\i from 0] in {学,位,论,文,开,题,报,告}{%
+        \node[anchor=base west,inner sep=0pt] at
+          ([xshift=135.71bp+40.70bp*\i,yshift=-255.90bp]current page.north west)
+          {\songti\bfseries\fontsize{36bp}{54bp}\selectfont
+            \scalebox{1}[0.980392]{\character}};
+      }
+      \node[anchor=base west,inner sep=0pt] at
+        ([xshift=90.10bp,yshift=-319.92bp]current page.north west)
+        {\songti\bfseries\fontsize{18bp}{27bp}\selectfont
+          \scalebox{1}[0.980392]{题\hspace{9.53bp}目：}};
+      \node[anchor=base west,inner sep=0pt] at
+        ([xshift=154.31bp,yshift=-319.92bp]current page.north west)
+        {\usebox{\ProposalCoverTitleBox}};
+      \draw[line width=1.68bp] ([xshift=154.31bp,yshift=-322.91bp]current page.north west)
+        -- ++(366.96bp,0);
+      \ifdim\dp\ProposalCoverTitleBox>20bp
+        \draw[line width=1.68bp] ([xshift=154.31bp,yshift=-349.91bp]current page.north west)
+          -- ++(366.96bp,0);
+      \fi
+      \ifdim\dp\ProposalCoverTitleBox>47bp
+        \draw[line width=1.68bp] ([xshift=154.31bp,yshift=-376.91bp]current page.north west)
+          -- ++(366.96bp,0);
+      \fi
+      \ProposalCoverField{419.534}{姓\hfill 名}{\ProposalName}
+      \ProposalCoverField{454.574}{学\hfill 号}{\ProposalStudentID}
+      \ProposalCoverField{489.374}{专\hfill 业}{\ProposalMajor}
+      \ProposalCoverField{524.414}{研\hfill 究\hfill 方\hfill 向}{\ProposalDirection}
+      \ProposalCoverField{559.454}{指\hfill 导\hfill 教\hfill 师}{\ProposalSupervisor}
+      \node[anchor=base,inner sep=0pt] at
+        ([xshift=312.53bp,yshift=-623.75bp]current page.north west)
+        {\ProposalCoverFooterFont\fontsize{16bp}{31.2bp}\selectfont 中山大学物理学院制};
+      \node[anchor=base,inner sep=0pt] at
+        ([xshift=312.53bp,yshift=-654.95bp]current page.north west)
+        {\ProposalCoverFooterFont\fontsize{16bp}{31.2bp}\selectfont\ProposalVersion};
+    \end{tikzpicture}
+    \null
+  \end{titlepage}
+}
+\newenvironment{proposalabstract}{%
+  \clearpage\ProposalChapterHeading{摘\quad 要}\songti\normalsize
+}{\par\clearpage}
+\endinput

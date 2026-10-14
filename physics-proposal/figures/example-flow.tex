@@ -1,0 +1,27 @@
+% !TEX program = xelatex
+% 此文件已预编译成 example-flow.pdf，主文档无需 shell-escape。
+\documentclass[tikz,border=3bp]{standalone}
+\usepackage{fontspec,xeCJK}
+\IfFileExists{../fonts/Simsun.ttc}{%
+  \setCJKmainfont{Simsun.ttc}[Path=../fonts/,FontIndex=0]
+}{\IfFontExistsTF{SimSun}{\setCJKmainfont{SimSun}}{%
+  \setCJKmainfont{Simsun.ttc}[FontIndex=0,
+    Path=/Applications/Microsoft Word.app/Contents/Resources/DFonts/]}}
+\IfFileExists{../fonts/times.ttf}{\setmainfont{times.ttf}[Path=../fonts/]}
+  {\setmainfont{Times New Roman}}
+\usetikzlibrary{arrows.meta,positioning}
+\begin{document}
+\begin{tikzpicture}[
+  node distance=10mm,
+  stage/.style={draw,minimum width=27mm,minimum height=12mm,
+    align=center,font=\fontsize{12bp}{18bp}\selectfont},
+  >=Stealth]
+  \node[stage] (a) {文献调研};
+  \node[stage,right=of a] (b) {理论建模};
+  \node[stage,right=of b] (c) {数值计算};
+  \node[stage,right=of c] (d) {结果分析};
+  \draw[->] (a) -- (b);
+  \draw[->] (b) -- (c);
+  \draw[->] (c) -- (d);
+\end{tikzpicture}
+\end{document}
